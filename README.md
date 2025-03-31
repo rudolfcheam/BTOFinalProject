@@ -34,7 +34,7 @@ It supports three types of users:
 
 ## 🧱 Tech Stack
 
-- Java (JDK 17)
+- Java (JDK 23)
 - Object-Oriented Design (Encapsulation, Inheritance, Polymorphism)
 - CLI (Command-Line Interface)
 - In-memory data store (`DataStore.java`)
