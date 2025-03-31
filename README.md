@@ -42,3 +42,34 @@ It supports three types of users:
 
 ## 📂 Project Structure
 BTO_Management_System/ ├── src/ │ ├── boundary/ # CLI Interface │ ├── control/ # Controllers │ ├── entity/ # Domain Models │ ├── utility/ # DataStore, validation, etc. │ └── Main.java ├── data/ # Sample user/project data (if externalized) ├── docs/ # UML diagrams, documentation ├── README.md
+
+
+## 🚀 Getting Started
+
+1. Clone this repo
+2. Open in IntelliJ or your preferred IDE
+3. Mark `src/` as the source root
+4. Run `Main.java`
+
+## 🧪 Sample Accounts
+
+| Role         | NRIC       | Password  |
+|--------------|------------|-----------|
+| Applicant    | S1234567A  | password  |
+| Applicant    | T7654321B  | password  |
+| HDB Officer  | S1122334C  | password  |
+| HDB Manager  | T9988776D  | password  |
+
+## 🖼️ UML Diagrams
+
+📌 Located in `/docs`:
+- `BTO_ClassDiagram.png`
+- `BTO_SequenceDiagram.png`
+
+## 📌 Authors
+This project was developed as part of the NTU SC2002 module.  
+Team Members:
+Santhiya
+QiRui
+Rudolf
+
