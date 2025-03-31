@@ -51,14 +51,6 @@ BTO_Management_System/ ├── src/ │ ├── boundary/ # CLI Interface �
 3. Mark `src/` as the source root
 4. Run `Main.java`
 
-## 🧪 Sample Accounts
-
-| Role         | NRIC       | Password  |
-|--------------|------------|-----------|
-| Applicant    | S1234567A  | password  |
-| Applicant    | T7654321B  | password  |
-| HDB Officer  | S1122334C  | password  |
-| HDB Manager  | T9988776D  | password  |
 
 ## 🖼️ UML Diagrams
 
