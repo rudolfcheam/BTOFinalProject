@@ -6,6 +6,7 @@ public class Enquiry {
     private User user;
     private String message;
     private String reply;
+    private Project project;
 
     public Enquiry(User user, String message) {
         this.user = user;
@@ -20,4 +21,7 @@ public class Enquiry {
 
     public void setMessage(String message) { this.message = message; }
     public void setReply(String reply) { this.reply = reply; }
+
+    public Project getProject() { return project; }
+    public void setProject(Project project) { this.project = project; }
 }

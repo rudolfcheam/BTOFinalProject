@@ -57,10 +57,14 @@ public class CLI {
         System.out.println("4. Enquiry Management");
         System.out.println("5. Application Withdrawal Request");
         System.out.println("6. View Application History");
-        System.out.println("7. Logout");
+        if (applicant instanceof HDBOfficer) {
+            System.out.println("7. Back");
+        } else {
+            System.out.println("7. Logout");
+        }
         while (true) {
 
-            System.out.print("[MENU] Select an option: ");
+            System.out.print("[APPLICANT_MENU] Select an option: ");
 
             String choice = scanner.nextLine().trim();
             switch (choice) {
@@ -83,7 +87,7 @@ public class CLI {
                     appController.viewApplicationHistory(applicant);
                     break;
                 case "7":
-                    System.out.println("Logging out...");
+                    System.out.println("Logging out of Applicant Menu...");
                     return;
                 default:
                     System.out.println("Invalid option.");
@@ -93,30 +97,46 @@ public class CLI {
 
     private void officerMenu(HDBOfficer officer) {
         System.out.println("\n=== HDB Officer Menu ===");
-        System.out.println("1. View Assigned Project");
-        System.out.println("2. View Applications");
-        System.out.println("3. Manage Bookings");
-        System.out.println("4. Enquiry Management");
-        System.out.println("5. Logout");
+        System.out.println("1. Apply as Normal Applicant");
+        System.out.println("2. Project Officer Registration");
+        System.out.println("3. Check Project Officer Registration Status");
+        System.out.println("4. View Project Details");
+        System.out.println("5. Enquiry Management");
+        System.out.println("6. View Applications Under Your Project");
+        System.out.println("7. Manage Bookings");
+        System.out.println("8. Generate Receipt for Applicant");
+        System.out.println("9. Logout");
         while (true) {
-            System.out.print("[MENU] Select an option: ");
+            System.out.print("[OFFICER_MENU] Select an option: ");
 
             String choice = scanner.nextLine().trim();
             switch (choice) {
                 case "1":
-                    projectController.viewAssignedProject(officer);
+                    applicantMenu(officer);
                     break;
                 case "2":
-                    appController.viewApplications(officer);
+                    appController.registerForProject(officer);
                     break;
                 case "3":
-                    appController.manageBooking(officer);
+                    appController.checkRegistrationStatus(officer);
                     break;
                 case "4":
-                    enquiryController.handleEnquiries(officer);
+                    projectController.viewAssignedProject(officer);
                     break;
                 case "5":
-                    System.out.println("Logging out...");
+                    enquiryController.handleEnquiries(officer);
+                    break;
+                case "6":
+                    appController.viewApplications(officer);
+                    break;
+                case "7":
+                    appController.manageBooking(officer);
+                    break;
+                case "8":
+                    appController.generateReceipt(officer);
+                    break;
+                case "9":
+                    System.out.printf("Logging out from %s\n", officer.getName());
                     return;
                 default:
                     System.out.println("Invalid option.");
@@ -132,10 +152,12 @@ public class CLI {
         System.out.println("4. Officer Registration Approvals");
         System.out.println("5. Generate Reports");
         System.out.println("6. Enquiry Management");
-        System.out.println("7. Logout");
+        System.out.println("7. View All Projects");
+        System.out.println("8. View Your Projects");
+        System.out.println("8. Logout");
 
         while (true) {
-            System.out.print("[MENU] Select an option: ");
+            System.out.print("[MANAGER_MENU] Select an option: ");
 
             String choice = scanner.nextLine().trim();
             switch (choice) {
@@ -158,6 +180,12 @@ public class CLI {
                     enquiryController.handleEnquiries(manager);
                     break;
                 case "7":
+                    projectController.viewAllProjects();
+                    break;
+                case "8":
+                    projectController.viewOwnProjects(manager);
+                    break;
+                case "9":
                     System.out.println("Logging out...\n");
                     return;
                 default:

@@ -9,6 +9,7 @@ public class Application {
     private List<String> allStatus = Arrays.asList("Pending", "Successful", "Unsuccessful", "Booked", "Withdrawn", "WithdrawRequested");
     private String status;
     private String statusBeforeWithdrawal;
+    private String flatTypeBooked;
 
     public Application(Applicant applicant, Project project) {
         this.applicant = applicant;
@@ -27,4 +28,8 @@ public class Application {
     }
     private void saveOldStatus() {statusBeforeWithdrawal = status;}
     public void restoreOldStatus() {status = statusBeforeWithdrawal;}
+
+    public String getFlatTypeBooked() { return flatTypeBooked; }
+    public void setFlatTypeBooked(String flatTypeBooked) { this.flatTypeBooked = flatTypeBooked; }
+
 }

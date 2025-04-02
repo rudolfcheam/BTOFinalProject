@@ -3,15 +3,14 @@ package control;
 import entity.*;
 import utility.DataStore;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class ApplicationController {
     private Scanner scanner = new Scanner(System.in);
 
     public void applyForProject(Applicant applicant) {
-        List<Project> available = DataStore.getVisibleProjectsFor(applicant);
+        List<Project> available = DataStore.getVisibleProjects();
+
 
         if (applicant.getApplication() != null) {
             System.out.println("You have already applied for a project.");
@@ -19,23 +18,55 @@ public class ApplicationController {
         }
 
         System.out.println("Available Projects:");
-        for (int i = 0; i < available.size(); i++) {
-            System.out.printf("%d. %s (%s)\n", i + 1, available.get(i).getName(), available.get(i).getNeighborhood());
+        int i;
+        for (i = 0; i < available.size(); i++) {
+            System.out.printf("%d. %s (%s) | 2R (%d) | 3R (%d)\n",
+                    i + 1, available.get(i).getName(),
+                    available.get(i).getNeighborhood(),
+                    available.get(i).getFlatCounts().get("2-Room"),
+                    available.get(i).getFlatCounts().get("3-Room"));
+        }
+        System.out.printf("[%d projects available]\n", i);
+
+        boolean validChoice = false;
+        while (!validChoice) {
+            System.out.print("Choose project: ");
+            int choice = scanner.nextInt() - 1;
+
+            if (choice >= 0 && choice < available.size()) {
+                Project chosen = available.get(choice);
+                validChoice = validateChoice(chosen, applicant);
+                if (validChoice) {
+                    Application application = new Application(applicant, chosen);
+                    applicant.setApplication(application);
+                    applicant.addToAppHistory(application);
+                    DataStore.getApplications().add(application);
+                    System.out.println("Application submitted successfully.");
+                }
+            } else {
+                System.out.println("Invalid selection.");
+            }
+        }
+    }
+
+    private boolean validateChoice(Project project, Applicant applicant) {
+        if (applicant instanceof HDBOfficer) {
+            if (((HDBOfficer) applicant).getAssignedProject().contains(project) ||
+                    applicant.getApplication() != null || ((HDBOfficer) applicant).getRequestedProject().equals(project)) {
+                System.out.println("HDB Officers cannot apply for projects that they are handling");
+                return false;
+            }
+        }
+        if (project.getFlatCounts().get("2-Room") == 0 && project.getFlatCounts().get("3-Room") == 0) {
+            System.out.println("All flats for this project have been booked! Please choose again.");
+            return false;
+        }
+        if (project.getFlatCounts().get("2-Room") == 0 && !applicant.eligibleFor3Room()) {
+            System.out.println("You are only eligible for 2-Room flats. All 2-Room flats in this project have been booked!");
+            return false;
         }
 
-        System.out.print("Choose project: ");
-        int choice = Integer.parseInt(scanner.nextLine()) - 1;
-
-        if (choice >= 0 && choice < available.size()) {
-            Project chosen = available.get(choice);
-            Application application = new Application(applicant, chosen);
-            applicant.setApplication(application);
-            applicant.addToAppHistory(application);
-            DataStore.getApplications().add(application);
-            System.out.println("Application submitted successfully.");
-        } else {
-            System.out.println("Invalid selection.");
-        }
+        return true;
     }
 
     public void withdrawApplication(Applicant applicant) {
@@ -89,12 +120,13 @@ public class ApplicationController {
 
     public void manageBooking(HDBOfficer officer) {
         Scanner sc = new Scanner(System.in);
-        System.out.print("Enter applicant NRIC: ");
+
+        System.out.print("Enter NRIC of applicant whose booking you want to manage: ");
         String nric = sc.nextLine().trim();
 
         Application app = DataStore.getApplicationByNric(nric);
-        if (app == null || !app.getProject().equals(officer.getAssignedProject())) {
-            System.out.println("No such application found or not under your project.");
+        if (app == null || !(officer.getAssignedProject().contains(app.getProject()))) {
+            System.out.println("The user has either not made an application, or the project is not assigned to you");
             return;
         }
 
@@ -103,31 +135,185 @@ public class ApplicationController {
             return;
         }
 
-        System.out.print("Enter flat type to book (2-Room/3-Room): ");
-        String flatType = sc.nextLine().trim();
-
-        if (officer.getAssignedProject().bookFlat(flatType)) {
-            app.setStatus("Booked");
-            app.getApplicant().setFlatType(flatType);
-            System.out.println("Flat booked successfully!");
+        if (!app.getApplicant().eligibleFor3Room()) {
+            System.out.printf("Applicant is only eligible for 2-Room flats at %s." +
+                    "\nWould you like to book a 2-Room flat for the applcant? (Y/N): ", app.getProject().getName());
+            String response = scanner.nextLine().trim();
+            if (response.equalsIgnoreCase("Y")) {
+                if (app.getProject().bookFlat("2-Room")) {
+                    System.out.printf("2-Room flat in %s booked successfully for %s (%s)! Congratulations!",
+                            app.getProject().getName(),
+                            app.getApplicant().getName(),
+                            app.getApplicant().getNric());
+                    app.setStatus("Booked");
+                    app.setFlatTypeBooked("2-Room");
+                } else {
+                    System.out.println("Flat unavailable! No vacancies left!");
+                }
+            } else {
+                System.out.println("Operation cancelled");
+            }
         } else {
-            System.out.println("Selected flat type is no longer available.");
+
+            System.out.printf("Applicant is eligible for both 2-Room and 3-Room flats in %s", app.getProject().getName());
+            System.out.println(""" 
+                            1. 2-Room
+                            2. 3-Room""");
+
+            List<String> flatTypes = Arrays.asList("2-Room", "3-Room");
+            int response;
+
+            do {
+                response = scanner.nextInt();
+                if (0 <= response && response <= flatTypes.size()) {
+                    System.out.printf("%s flat selected. Please wait a moment...\n", flatTypes.get(response - 1));
+                    if (app.getProject().bookFlat(flatTypes.get(response - 1))) {
+                        System.out.printf("%s flat in %s booked successfully for %s (%s)! Congratulations!",
+                            flatTypes.get(response - 1),
+                            app.getProject().getName(),
+                            app.getApplicant().getName(),
+                            app.getApplicant().getNric());
+                        app.setStatus("Booked");
+                        app.setFlatTypeBooked(flatTypes.get(response - 1));
+                    } else {
+                        System.out.println("Flat unavailable! No vacancies left!");
+                    }
+                } else {
+                    System.out.println("Invalid response!");
+                }
+            } while (response < 0 || response > flatTypes.size());
         }
     }
 
+
+    public void registerForProject(HDBOfficer officer) {
+        System.out.println("These are the HDB projects that are available for registration: (MAX 10 officers per project)");
+
+        System.out.println("=== Available Projects ===");
+        List<Project> allProjects = DataStore.getProjects();
+
+        int index = 0;
+        for (Project project : allProjects) {
+            System.out.printf("%d. %s (%s) [%s to %s] (Max - %d slots | %d slots left)\n",
+                    ++index,
+                    project.getName(),
+                    project.getNeighborhood(),
+                    project.getStartDate(),
+                    project.getEndDate(),
+                    project.getOfficerSlots(),
+                    project.getOfficerSlots() - project.getOfficersList().size());
+        }
+        System.out.println("Select the project that you would like to register for: ");
+
+        int choice = scanner.nextInt();
+        if (choice < 0 || choice > allProjects.size()) {
+            System.out.println("Invalid Project.");
+        } else {
+            Project selected = allProjects.get(choice - 1);
+            boolean validChoice = validRegistration(officer, selected);
+            if (validChoice) {
+                officer.setRequestedProject(selected);
+                System.out.println("Request submitted for manager's approval.");
+            } else {
+                System.out.println("You cannot apply for this project!");
+            }
+        }
+    }
+
+
+    //Checks if the project selected by the officer was applied by him, or if it overlaps with other projects that he has applied for
+    private boolean validRegistration(HDBOfficer officer, Project project) {
+
+        if (officer.getApplication() != null &&
+                officer.getApplication().getProject().equals(project) &&
+                project.getOfficerSlots() > project.getOfficersList().size()) {
+            return false;
+        } else if (officer.getAssignedProject() != null) {
+            for (Project assignedProject : officer.getAssignedProject() ) {
+                if (!(assignedProject.getStartDate().isAfter(project.getEndDate()) ||
+                        assignedProject.getEndDate().isBefore(project.getStartDate()))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return true;
+    }
+
+
+    public void checkRegistrationStatus(HDBOfficer officer) {
+        if (officer.getRequestedProject() != null) {
+            System.out.printf("Your registration to join the Project %s is still pending.\n", officer.getRequestedProject().getName());
+        } else {
+            System.out.println("You have not registered to join any new projects.");
+        }
+        if (!officer.getAssignedProject().isEmpty()) {
+            System.out.println("You have already been successfully registered for the following projects: ");
+            int index = 0;
+            for (Project project : officer.getAssignedProject()) {
+                System.out.printf("%d. %s [%s to %s]",
+                        ++index,
+                        project.getName(),
+                        project.getStartDate(),
+                        project.getEndDate());
+            }
+        }
+    }
+    
+
     public void viewApplications(HDBOfficer officer) {
-        Project project = officer.getAssignedProject();
-        if (project == null) {
+        List<Project> assignedProjects = officer.getAssignedProject();
+        if (assignedProjects.isEmpty()) {
+            System.out.println("You have not been assigned to a project.");
             return;
         }
-        System.out.println("Applications for: " + project.getName());
-        for (Application app : DataStore.getApplications()) {
-            if (app.getProject().equals(project)) {
-                System.out.printf("- %s (%s): %s\n",
-                        app.getApplicant().getName(),
-                        app.getApplicant().getNric(),
-                        app.getStatus());
+        for (Project project: assignedProjects) {
+            System.out.printf("==== Applications for: %s ====", project.getName());
+            int index = 0;
+            for (Application app : DataStore.getApplications()) {
+                if (app.getProject().equals(project)) {
+                    System.out.printf("%d. %s (%s): %s\n",
+                            ++index,
+                            app.getApplicant().getName(),
+                            app.getApplicant().getNric(),
+                            app.getStatus());
+                }
             }
+            if (index == 0) {
+                System.out.println("There have not been any applications for your projects.");
+            }
+        }
+    }
+
+
+    public void generateReceipt(HDBOfficer officer) {
+        System.out.println("Enter the NRIC number of the user that you would like to generate a receipt for: ");
+        scanner.nextLine(); //Remove the newline character.
+        String nric = scanner.nextLine().trim();
+
+        Application app = DataStore.getApplicationByNric(nric);
+
+        if (app != null){
+            if (!app.getStatus().equalsIgnoreCase("booked")) {
+                System.out.println("User has not booked a flat.");
+            } else {
+                System.out.printf("==== Receipt for %s ====\n", app.getApplicant());
+                System.out.printf("""
+                        Applicant Name: %s
+                        NRIC: %s
+                        Age: %d
+                        Marital Status: %s
+                        Project Name: %s
+                        Neighbourhood: %s
+                        Flat Type Selected: %s
+                        Flat Price: %s
+                        Flat booked by: %s
+                        """, app.getApplicant().getName(), app.getApplicant().getNric(), app.getApplicant().getAge(),
+                            app.getApplicant().getMaritalStatus(), app.getProject().getName(), app.getProject().getNeighborhood(),
+                            app.getFlatTypeBooked(), app.getProject().getFlatPrices().get(app.getFlatTypeBooked()), officer.getName());
+            }
+        } else {
+            System.out.println("NRIC not found.");
         }
     }
 

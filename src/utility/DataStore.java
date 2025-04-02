@@ -21,12 +21,13 @@ public class DataStore {
         // Sample Users
         users.add(new Applicant("S1234567A", "password", "Alice", 35, "Single"));
         users.add(new Applicant("T7654321B", "password", "Bob", 40, "Married"));
+        users.add(new Applicant("T2934242C", "password", "Robert", 34, "Single"));
         users.add(new HDBOfficer("S1122334C", "password", "Officer Joe", 36, "Married"));
         users.add(new HDBManager("T9988776D", "password", "Manager Jane", 45, "Married"));
 
         // Sample Project
-        HDBManager jane = (HDBManager) users.get(3);
-        Project p1 = new Project("Acacia Breeze", "Yishun", jane, 2, 350000, 3, 450000);
+        HDBManager jane = (HDBManager) users.get(4);
+        Project p1 = new Project("Acacia Breeze", "Yishun", jane, 2, 350000, 3, 450000, 10);
 
         PrintStream originalOut = System.out;
         System.setOut(new PrintStream(OutputStream.nullOutputStream()));
@@ -48,9 +49,9 @@ public class DataStore {
     public static List<Enquiry> getEnquiries() { return enquiries; }
 
     public static Application getApplicationByNric(String nric) {
-        for (Application app : applications) {
-            if (app.getApplicant().getNric().equalsIgnoreCase(nric)) {
-                return app;
+        for (User user : users) {
+            if (user.getNric().equalsIgnoreCase(nric)) {
+                return ((Applicant) user).getApplication();
             }
         }
         return null;
@@ -62,14 +63,7 @@ public class DataStore {
                 .collect(Collectors.toList());
     }
 
-    public static List<Project> getVisibleProjectsFor(Applicant applicant) {
-        return projects.stream().filter(p -> {
-            return (
-                    p.isVisible() && (
-                    (applicant.getAge() >= 35 && applicant.getMaritalStatus().equalsIgnoreCase("Single")) ||
-                    (applicant.getAge() >= 21 && applicant.getMaritalStatus().equalsIgnoreCase("Married"))
-                    )
-            );
-        }).collect(Collectors.toList());
+    public static List<Project> getVisibleProjects() {
+        return projects.stream().filter(Project::isVisible).collect(Collectors.toList());
     }
 }

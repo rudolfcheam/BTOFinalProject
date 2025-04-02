@@ -23,6 +23,14 @@ public abstract class User {
 
     public void setPassword(String password) { this.password = password; }
 
+    public boolean eligibleForBTO() {
+        return !maritalStatus.equalsIgnoreCase("single") || age >= 35;
+    }
+
+    public boolean eligibleFor3Room() {
+        return eligibleForBTO() && maritalStatus.equalsIgnoreCase("married");
+    }
+
     @Override
     public String toString() {
         return String.format("%s (%s)", name, nric);
