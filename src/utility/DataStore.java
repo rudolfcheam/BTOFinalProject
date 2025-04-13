@@ -66,4 +66,24 @@ public class DataStore {
     public static List<Project> getVisibleProjects() {
         return projects.stream().filter(Project::isVisible).collect(Collectors.toList());
     }
+
+    public static List<Application> getFilteredBookedApplications(
+            String maritalStatusFilter,
+            String flatTypeFilter,
+            Integer minAge,
+            Integer maxAge,
+            String projectNameFilter
+    ) {
+        return applications.stream()
+                .filter(app -> "Booked". equalsIgnoreCase(app.getStatus()))
+                .filter(app -> maritalStatusFilter == null ||
+                        app.getApplicant().getMaritalStatus().equalsIgnoreCase(maritalStatusFilter))
+                .filter(app -> flatTypeFilter == null ||
+                        app.getApplicant().getFlatType().equalsIgnoreCase(flatTypeFilter))
+                .filter(app -> (minAge == null || app.getApplicant().getAge() >= minAge) &&
+                                        (maxAge == null || app.getApplicant().getAge() <= maxAge))
+                .filter(app -> projectNameFilter == null ||
+                        app.getProject().getName().equalsIgnoreCase(projectNameFilter))
+                .toList();
+    }
 }

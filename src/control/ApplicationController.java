@@ -4,6 +4,7 @@ import entity.*;
 import utility.DataStore;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ApplicationController {
     private Scanner scanner = new Scanner(System.in);
@@ -473,6 +474,95 @@ public class ApplicationController {
 
     }
 
+    public void generateReports(HDBManager manager) {
+
+        String maritalStatusFilter = null;
+        String flatTypeFilter = null;
+        Integer minAge = null;
+        Integer maxAge = null;
+        String projectNameFilter = null;
+
+        while (true) {
+            System.out.println("\n=== Booked Applicants Report Filter Menu ===");
+            System.out.println("Current Filters:");
+            System.out.println("1. Marital Status: " + (maritalStatusFilter == null ? "Any" : maritalStatusFilter));
+            System.out.println("2. Flat Type: " + (flatTypeFilter == null ? "Any" : flatTypeFilter));
+            System.out.println("3. Min. Age: " + (minAge == null ? "Any" : minAge));
+            System.out.println("4. Max. Age: " + (maxAge == null ? "Any" : maxAge));
+            System.out.println("5. Project Name: " + (projectNameFilter == null ? "Any" : projectNameFilter));
+            System.out.println("6. Generate Report");
+            System.out.println("7. Clear all Filters");
+            System.out.println("8. Back\n");
+
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine().trim();
+
+            switch (choice) {
+                case "1":
+                    System.out.print("Enter marital status (leave blank to remove filter): ");
+                    String ms = scanner.nextLine().trim();
+                    maritalStatusFilter = ms.isEmpty() ? null : ms;
+                    break;
+
+                case "2":
+                    System.out.print("Enter Flat Type (leave blank to remove filter): ");
+                    String ft = scanner.nextLine().trim();
+                    flatTypeFilter = ft.isEmpty() ? null : ft;
+                    break;
+
+                case "3":
+                    System.out.print("Enter Minimum Age (leave blank to remove filter): ");
+                    String minimum = scanner.nextLine().trim();
+                    minAge = minimum.isEmpty() ? null : Integer.parseInt(minimum);
+                    break;
+
+                case "4":
+                    System.out.print("Enter Maximum Age (leave blank to remove filter): ");
+                    String maximum = scanner.nextLine().trim();
+                    maxAge = maximum.isEmpty() ? null : Integer.parseInt(maximum);
+                    break;
+
+                case "5":
+                    System.out.print("Enter Project Name (or leave blank to remove filter): ");
+                    String projName = scanner.nextLine().trim();
+                    projectNameFilter = projName.isEmpty() ? null : projName;
+                    break;
+
+                case "6":
+                    List<Application> results = DataStore.getFilteredBookedApplications(
+                            maritalStatusFilter, flatTypeFilter, minAge, maxAge, projectNameFilter
+                    );
+
+                    System.out.println("\n=== Booked Applicants Report ===");
+                    if (results.isEmpty()) {
+                        System.out.println("No matching applicants found.");
+                    } else {
+                        for (Application app : results) {
+                            Applicant applicant = app.getApplicant();
+                            Project project = app.getProject();
+                            System.out.printf("Name: %s | Age: %d | Marital Status: %s | Flat Type: %s | Project: %s\n",
+                                    applicant.getName(), applicant.getAge(), applicant.getMaritalStatus(), applicant.getFlatType(), project.getName());
+                        }
+                    }
+                break;
+
+                case "7":
+                    maritalStatusFilter = null;
+                    flatTypeFilter = null;
+                    minAge = null;
+                    maxAge = null;
+                    projectNameFilter = null;
+                    System.out.println("All filters cleared.");
+                    break;
+
+                case "8":
+                    return;
+
+                default:
+                    System.out.println("Invalid Choice.");
+            }
+        }
+    }
 
 }
 

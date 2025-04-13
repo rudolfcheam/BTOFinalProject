@@ -394,24 +394,6 @@ public class ProjectController {
     }
 
 
-    public void generateReports(HDBManager manager) {
-        System.out.println("=== Report: Booked Applicants in Your Projects ===");
-        for (Application app : DataStore.getApplications()) {
-            if (app.getStatus().equals("Booked") &&
-                    app.getProject().getManager().equals(manager)) {
-
-                System.out.printf("Name: %s | NRIC: %s | Age: %d | Marital: %s | Flat: %s | Project: %s\n",
-                        app.getApplicant().getName(),
-                        app.getApplicant().getNric(),
-                        app.getApplicant().getAge(),
-                        app.getApplicant().getMaritalStatus(),
-                        app.getApplicant().getFlatType(),
-                        app.getProject().getName());
-            }
-        }
-    }
-
-
     public void viewAllProjects() {
         List<Project> allProjectsByManager = DataStore.getProjects().stream()
                 .sorted(Comparator.comparing(p -> p.getManager().getName()))

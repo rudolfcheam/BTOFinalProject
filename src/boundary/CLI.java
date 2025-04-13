@@ -154,7 +154,7 @@ public class CLI {
         System.out.println("6. Enquiry Management");
         System.out.println("7. View All Projects");
         System.out.println("8. View Your Projects");
-        System.out.println("8. Logout");
+        System.out.println("9. Logout");
 
         while (true) {
             System.out.print("[MANAGER_MENU] Select an option: ");
@@ -174,7 +174,7 @@ public class CLI {
                     projectController.approveOfficers(manager);
                     break;
                 case "5":
-                    projectController.generateReports(manager);
+                    appController.generateReports(manager);
                     break;
                 case "6":
                     enquiryController.handleEnquiries(manager);
