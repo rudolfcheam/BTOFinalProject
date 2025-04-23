@@ -31,7 +31,6 @@ public class DataStore {
 
         // Sample Project
         HDBManager jane = (HDBManager) users.get(7);
-        HDBManager michael = (HDBManager) users.get(8);
         Project p1 = new Project("Acacia Breeze", "Yishun", jane, 2, 350000, 3, 450000, 10);
         
 
