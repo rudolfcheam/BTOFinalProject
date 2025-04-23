@@ -82,7 +82,7 @@ public class CLI {
                     appController.viewStatus(applicant);
                     break;
                 case "5":
-                    enquiryController.handleEnquiries(applicant);
+                    enquiryController.handleEnquiries(applicant, true);
                     break;
                 case "6":
                     appController.withdrawApplication(applicant);
@@ -132,7 +132,7 @@ public class CLI {
                     projectController.viewAssignedProject(officer);
                     break;
                 case "6":
-                    enquiryController.handleEnquiries(officer);
+                    enquiryController.handleEnquiries(officer, false);
                     break;
                 case "7":
                     appController.viewApplications(officer);
@@ -189,7 +189,7 @@ public class CLI {
                     appController.generateReports(manager);
                     break;
                 case "7":
-                    enquiryController.handleEnquiries(manager);
+                    enquiryController.handleEnquiries(manager, false);
                     break;
                 case "8":
                     projectController.viewAllProjects();
