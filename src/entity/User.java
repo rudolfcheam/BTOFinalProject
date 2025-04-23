@@ -35,4 +35,17 @@ public abstract class User {
     public String toString() {
         return String.format("%s (%s)", name, nric);
     }
+    public boolean changePassword(String oldPassword, String newPassword) {
+        if (this.password.equals(oldPassword)) {
+            if (isPasswordValid(newPassword)) {
+                this.password = newPassword;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isPasswordValid(String password) {
+        return password.length() >= 8;
+    }
 }
