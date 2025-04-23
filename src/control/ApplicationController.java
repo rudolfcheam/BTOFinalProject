@@ -8,6 +8,22 @@ import java.util.*;
 public class ApplicationController {
     private Scanner scanner = new Scanner(System.in);
 
+    public int get_int_input(String s) {
+        while (true) {
+            try {
+                System.out.print(s);
+                int value = Integer.parseInt(scanner.nextLine().trim());
+                if (value < 0) {
+                    System.out.println("Please enter a non-negative number.");
+                } else {
+                    return value;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input! Please enter a whole number");
+            }
+        }
+    }
+
     public void applyForProject(Applicant applicant) {
         List<Project> available = DataStore.getVisibleProjects();
 
@@ -31,7 +47,7 @@ public class ApplicationController {
         boolean validChoice = false;
         while (!validChoice) {
             System.out.print("Choose project: ");
-            int choice = scanner.nextInt() - 1;
+            int choice = get_int_input("Choose project: ") - 1;
             scanner.nextLine();
 
             if (choice >= 0 && choice < available.size()) {
