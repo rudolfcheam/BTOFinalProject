@@ -28,6 +28,7 @@ public class DataStore {
         users.add(new HDBOfficer("S2938742G", "password", "Officer Roy", 39, "Married"));
         users.add(new HDBManager("T9988776D", "password", "Manager Jane", 45, "Married"));
         users.add(new HDBManager("S1653293K", "password", "Manager Michael", 52, "Married"));
+        users.add(new HDBManager("S2948392F", "password", "Manager Sarah", 38, "Single"));
 
         // Sample Project
         HDBManager jane = (HDBManager) users.get(7);
