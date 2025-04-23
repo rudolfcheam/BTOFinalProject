@@ -347,8 +347,7 @@ public class ProjectController {
             System.out.printf("%d. %s\n", i + 1, projects.get(i).getName());
         }
 
-        System.out.print("Select project to delete: ");
-        int choice = Integer.parseInt(scanner.nextLine()) - 1;
+        int choice = get_int_input("Select project to delete: ");
 
         if (choice >= 0 && choice < projects.size()) {
             Project selected = projects.remove(choice);
@@ -372,8 +371,7 @@ public class ProjectController {
             System.out.printf("%d. %s (Visible: %b)\n", i + 1, projects.get(i).getName(), projects.get(i).isVisible());
         }
 
-        System.out.print("Select project to toggle visibility: ");
-        int choice = Integer.parseInt(scanner.nextLine()) - 1;
+        int choice = get_int_input("Select project to toggle visibility: ");
 
         if (choice >= 0 && choice < projects.size()) {
             Project selected = projects.get(choice);
