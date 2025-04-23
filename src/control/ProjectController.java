@@ -397,14 +397,14 @@ public class ProjectController {
                     String input = scanner.nextLine().trim();
 
                     if (input.equalsIgnoreCase("Y")) {
-                        // Store project first to avoid NPE
+                        
                         Project approvedProject = officer.getRequestedProject();
                         officer.addAssignedProject(approvedProject);
                         officer.setRequestedProject(null);
                         System.out.printf("Officer %s approved for Project %s.\n",
-                                officer.getName(), approvedProject.getName()); // Use stored project
+                                officer.getName(), approvedProject.getName()); 
                     } else if (input.equalsIgnoreCase("N")) {
-                        // Optional: Store project for logging
+                        
                         Project rejectedProject = officer.getRequestedProject();
                         officer.setRequestedProject(null);
                         System.out.printf("Officer %s rejected for Project %s.\n",
