@@ -13,36 +13,37 @@ public class EnquiryController {
     ProjectController pc = new ProjectController();
 
     public void handleEnquiries(User user) {
-        System.out.println("=== Enquiry Menu ===");
-        if (user instanceof Applicant) {
-            System.out.println("1. View Enquiries");
-            System.out.println("2. Submit Enquiry");
-            System.out.println("3. Edit Enquiry");
-            System.out.println("4. Delete Enquiry");
+    System.out.println("=== Enquiry Menu ===");
+    if (user instanceof HDBOfficer || user instanceof HDBManager) {
+        viewAndReply(user);
+    } else if (user instanceof Applicant) {
+        
+        System.out.println("1. View Enquiries");
+        System.out.println("2. Submit Enquiry");
+        System.out.println("3. Edit Enquiry");
+        System.out.println("4. Delete Enquiry");
 
-            System.out.print("Choose: ");
-            String choice = scanner.nextLine().trim();
+        System.out.print("Choose: ");
+        String choice = scanner.nextLine().trim();
 
-            switch (choice) {
-                case "1":
-                    viewEnquiries(user);
-                    break;
-                case "2":
-                    submitEnquiry((Applicant) user);
-                    break;
-                case "3":
-                    editEnquiry((Applicant) user);
-                    break;
-                case "4":
-                    deleteEnquiry((Applicant) user);
-                    break;
-                default:
-                    System.out.println("Invalid choice.");
-            }
-        } else {
-            viewAndReply(user);
+        switch (choice) {
+            case "1":
+                viewEnquiries(user);
+                break;
+            case "2":
+                submitEnquiry((Applicant) user);
+                break;
+            case "3":
+                editEnquiry((Applicant) user);
+                break;
+            case "4":
+                deleteEnquiry((Applicant) user);
+                break;
+            default:
+                System.out.println("Invalid choice.");
         }
     }
+}
 
     private void viewEnquiries(User user) {
         List<Enquiry> userEnquiries = DataStore.getEnquiries().stream().filter(
@@ -118,15 +119,20 @@ public class EnquiryController {
     }
 
     private void viewAndReply(User officerOrManager) {
-        List<Enquiry> relevantEnquiries = DataStore.getEnquiries().stream().filter(
-                enquiry -> {
-                    if (enquiry.getProject() == null) { return true; }
-                    if (officerOrManager instanceof HDBOfficer officer) {
-                        return officer.getAssignedProject().contains(enquiry.getProject());
-                    }
-                    return officerOrManager instanceof HDBManager;
-                }
-        ).toList();
+    List<Enquiry> relevantEnquiries = DataStore.getEnquiries().stream().filter(
+        enquiry -> {
+            if (officerOrManager instanceof HDBOfficer officer) {
+                // Officers see enquiries for their assigned projects or general enquiries
+                return enquiry.getProject() == null || 
+                    officer.getAssignedProject().contains(enquiry.getProject());
+            } else if (officerOrManager instanceof HDBManager) {
+                // Managers see all enquiries
+                return true;
+            }
+            return false;
+        }
+    ).toList();
+
 
         for (Enquiry enquiry : relevantEnquiries) {
             System.out.printf("ID: %d | From: %s | Msg: %s | Project: %s | Reply: %s\n",
@@ -138,7 +144,16 @@ public class EnquiryController {
         }
 
         System.out.print("Enter ID to reply (or 0 to cancel): ");
-        int id = Integer.parseInt(scanner.nextLine());
+    String input = scanner.nextLine().trim();
+
+    
+    if (input.isEmpty()) {
+        System.out.println("No input provided. Exiting...");
+        return;
+    }
+
+    try {
+        int id = Integer.parseInt(input);
         if (id == 0) return;
 
         for (Enquiry enquiry : DataStore.getEnquiries()) {
@@ -149,7 +164,9 @@ public class EnquiryController {
                 return;
             }
         }
-
         System.out.println("Invalid ID.");
+    } catch (NumberFormatException e) {
+        System.out.println("Invalid input! Please enter a number.");
     }
+}
 }
