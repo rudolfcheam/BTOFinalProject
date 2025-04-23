@@ -384,42 +384,45 @@ public class ProjectController {
 
 
     public void approveOfficers(HDBManager manager) {
-        boolean noApplicants = false, validInput;
-        for (User user : DataStore.getUsers()) {
-            if (user instanceof HDBOfficer officer) {
+    boolean noApplicants = false, validInput;
+    for (User user : DataStore.getUsers()) {
+        if (user instanceof HDBOfficer officer) {
+            if (officer.getRequestedProject() != null &&
+                    officer.getRequestedProject().getManager().equals(manager)) {
+                noApplicants = true;
+                do {
+                    validInput = true;
+                    System.out.printf("Approve officer %s for project %s? (Y/N/P (Leave as Pending)): ",
+                            officer.getName(), officer.getRequestedProject().getName());
+                    String input = scanner.nextLine().trim();
 
-                if (officer.getRequestedProject() != null &&
-                        officer.getRequestedProject().getManager().equals(manager)) {
-                    noApplicants = true;
-                    do {
-                        validInput = true;
-                        System.out.printf("Approve officer %s for project %s? (Y/N/P (Leave as Pending)): ",
-                                officer.getName(), officer.getRequestedProject().getName());
-                        String input = scanner.nextLine().trim();
-
-                        if (input.equalsIgnoreCase("Y")) {
-                            officer.addAssignedProject(officer.getRequestedProject());
-                            officer.setRequestedProject(null);
-                            System.out.printf("Officer %s approved for Project %s.\n",
-                                    officer.getName(), officer.getRequestedProject().getName());
-                        } else if (input.equalsIgnoreCase("n")) {
-                            officer.setRequestedProject(null);
-                            System.out.println("Officer rejected.");
-                        } else if (input.equalsIgnoreCase("p")) {
-                            System.out.printf("Officer %s's application has been left as pending.\n", officer.getName());
-                        }
-                        else {
-                            System.out.println("Invalid Input!");
-                            validInput = false;
-                        }
-                    } while (!validInput);
-                }
+                    if (input.equalsIgnoreCase("Y")) {
+                        // Store project first to avoid NPE
+                        Project approvedProject = officer.getRequestedProject();
+                        officer.addAssignedProject(approvedProject);
+                        officer.setRequestedProject(null);
+                        System.out.printf("Officer %s approved for Project %s.\n",
+                                officer.getName(), approvedProject.getName()); // Use stored project
+                    } else if (input.equalsIgnoreCase("N")) {
+                        // Optional: Store project for logging
+                        Project rejectedProject = officer.getRequestedProject();
+                        officer.setRequestedProject(null);
+                        System.out.printf("Officer %s rejected for Project %s.\n",
+                                officer.getName(), rejectedProject.getName());
+                    } else if (input.equalsIgnoreCase("P")) {
+                        System.out.printf("Officer %s's application has been left as pending.\n", officer.getName());
+                    } else {
+                        System.out.println("Invalid Input!");
+                        validInput = false;
+                    }
+                } while (!validInput);
             }
         }
-        if (!noApplicants) {
-            System.out.println("No officers have applied for your projects that you are managing.");
-        }
     }
+    if (!noApplicants) {
+        System.out.println("No officers have applied for your projects that you are managing.");
+    }
+}
 
 
     public void viewAllProjects() {
