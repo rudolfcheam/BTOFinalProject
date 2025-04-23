@@ -4,7 +4,6 @@ import entity.*;
 import utility.DataStore;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ApplicationController {
     private Scanner scanner = new Scanner(System.in);
@@ -33,6 +32,7 @@ public class ApplicationController {
         while (!validChoice) {
             System.out.print("Choose project: ");
             int choice = scanner.nextInt() - 1;
+            scanner.nextLine();
 
             if (choice >= 0 && choice < available.size()) {
                 Project chosen = available.get(choice);
@@ -165,8 +165,8 @@ public class ApplicationController {
             int response;
 
             do {
-                response = scanner.nextInt();
-                if (0 <= response && response <= flatTypes.size()) {
+                response = Integer.parseInt((sc.nextLine().trim()));
+                if (1 <= response && response <= flatTypes.size()) {
                     System.out.printf("%s flat selected. Please wait a moment...\n", flatTypes.get(response - 1));
                     if (app.getProject().bookFlat(flatTypes.get(response - 1))) {
                         System.out.printf("%s flat in %s booked successfully for %s (%s)! Congratulations!",
@@ -188,6 +188,15 @@ public class ApplicationController {
 
 
     public void registerForProject(HDBOfficer officer) {
+        if (officer.getRequestedProject() != null) {
+            System.out.printf("You have already applied for %s, would you like to reapply for a different project instead? (Y/N)", officer.getRequestedProject().getName());
+            String selection = scanner.nextLine().trim();
+            if (!selection.equalsIgnoreCase("y")) {
+                System.out.println("Application for your project still preserved.");
+                return;
+            }
+        }
+
         System.out.println("These are the HDB projects that are available for registration: (MAX 10 officers per project)");
 
         System.out.println("=== Available Projects ===");
@@ -207,6 +216,8 @@ public class ApplicationController {
         System.out.println("Select the project that you would like to register for: ");
 
         int choice = scanner.nextInt();
+        scanner.nextLine();
+
         if (choice < 0 || choice > allProjects.size()) {
             System.out.println("Invalid Project.");
         } else {
@@ -368,7 +379,7 @@ public class ApplicationController {
                     app.getProject().getName()
             );
         }
-        System.out.printf("%d Total Applications", index);
+        System.out.printf("%d Total Applications\n", index);
     }
 
     public void processPending(HDBManager manager) {

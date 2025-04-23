@@ -2,16 +2,11 @@ package control;
 
 import entity.*;
 import utility.DataStore;
-
-import javax.xml.crypto.Data;
-import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 
 public class ProjectController {
@@ -195,21 +190,21 @@ public class ProjectController {
                 6. Manager in Charge
                 7. Available HDB Officer Slots (MAX 10)
                 8. Exit""");
-        choice = scanner.nextInt();
-        switch(choice) {
-            case 1:
+        String menuChoice = scanner.nextLine().trim();
+        switch(menuChoice) {
+            case "1":
                 changeName(toEdit);
                 break;
-            case 2:
+            case "2":
                 changeNeighbourhood(toEdit);
                 break;
-            case 3:
+            case "3":
                 changeFlatDetails("2-room", toEdit);
                 break;
-            case 4:
+            case "4":
                 changeFlatDetails("3-room", toEdit);
                 break;
-            case 5:
+            case "5":
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 LocalDate oldStart = toEdit.getStartDate();
                 LocalDate oldEnd = toEdit.getEndDate();
@@ -223,15 +218,14 @@ public class ProjectController {
                             oldEnd.format(formatter), toEdit.getEndDate().format(formatter));
                 }
                 break;
-            case 6:
+            case "6":
                 changeManager(toEdit, manager);
                 break;
-            case 7:
+            case "7":
                 changeOfficerSlots(toEdit);
                 break;
-            case 8:
+            case "8":
                 System.out.println("Exiting...");
-                return;
         }
     }
 
@@ -247,7 +241,6 @@ public class ProjectController {
     public void changeManager(Project project, HDBManager oldManager) {
         System.out.println("Enter the NRIC of the new manager: ");
         String nric = scanner.nextLine().trim();
-        boolean exists = false;
         for (User user: DataStore.getUsers()) {
             if (user.getNric().equalsIgnoreCase(nric)) {
                 if (user instanceof HDBManager newManager) {
@@ -368,28 +361,40 @@ public class ProjectController {
 
 
     public void approveOfficers(HDBManager manager) {
+        boolean noApplicants = false, validInput;
         for (User user : DataStore.getUsers()) {
             if (user instanceof HDBOfficer officer) {
 
                 if (officer.getRequestedProject() != null &&
-                        officer.getRequestedProject().getManager().equals(manager) &&
-                        officer.getAssignedProject() == null) {
+                        officer.getRequestedProject().getManager().equals(manager)) {
+                    noApplicants = true;
+                    do {
+                        validInput = true;
+                        System.out.printf("Approve officer %s for project %s? (Y/N/P (Leave as Pending)): ",
+                                officer.getName(), officer.getRequestedProject().getName());
+                        String input = scanner.nextLine().trim();
 
-                    System.out.printf("Approve officer %s for project %s? (Y/N): ",
-                            officer.getName(), officer.getRequestedProject().getName());
-                    String input = scanner.nextLine().trim();
-
-                    if (input.equalsIgnoreCase("Y")) {
-                        officer.addAssignedProject(officer.getRequestedProject());
-                        officer.setRequestedProject(null);
-                        System.out.printf("Officer %s approved for Project %s.\n",
-                                            officer.getName(), officer.getRequestedProject().getName());
-                    } else {
-                        officer.setRequestedProject(null);
-                        System.out.println("Officer rejected.");
-                    }
+                        if (input.equalsIgnoreCase("Y")) {
+                            officer.addAssignedProject(officer.getRequestedProject());
+                            officer.setRequestedProject(null);
+                            System.out.printf("Officer %s approved for Project %s.\n",
+                                    officer.getName(), officer.getRequestedProject().getName());
+                        } else if (input.equalsIgnoreCase("n")) {
+                            officer.setRequestedProject(null);
+                            System.out.println("Officer rejected.");
+                        } else if (input.equalsIgnoreCase("p")) {
+                            System.out.printf("Officer %s's application has been left as pending.\n", officer.getName());
+                        }
+                        else {
+                            System.out.println("Invalid Input!");
+                            validInput = false;
+                        }
+                    } while (!validInput);
                 }
             }
+        }
+        if (!noApplicants) {
+            System.out.println("No officers have applied for your projects that you are managing.");
         }
     }
 
