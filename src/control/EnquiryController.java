@@ -12,9 +12,36 @@ public class EnquiryController {
     private Scanner scanner = new Scanner(System.in);
     ProjectController pc = new ProjectController();
 
-    public void handleEnquiries(User user) {
+    public void handleEnquiries(User user, boolean isApplicantContext) {
     System.out.println("=== Enquiry Menu ===");
-    if (user instanceof HDBOfficer || user instanceof HDBManager) {
+    if (isApplicantContext) {
+        
+        System.out.println("1. View Enquiries");
+        System.out.println("2. Submit Enquiry");
+        System.out.println("3. Edit Enquiry");
+        System.out.println("4. Delete Enquiry");
+
+        System.out.print("Choose: ");
+        String choice = scanner.nextLine().trim();
+
+        switch (choice) {
+            case "1":
+                viewEnquiries(user);
+                break;
+            case "2":
+                submitEnquiry((Applicant) user);
+                break;
+            case "3":
+                editEnquiry((Applicant) user);
+                break;
+            case "4":
+                deleteEnquiry((Applicant) user);
+                break;
+            default:
+                System.out.println("Invalid choice.");
+        }
+    } else if (user instanceof HDBOfficer || user instanceof HDBManager) {
+        
         viewAndReply(user);
     } else if (user instanceof Applicant) {
         
