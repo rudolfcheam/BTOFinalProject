@@ -142,7 +142,19 @@ public class ProjectController {
 
 
     private void createProject(HDBManager manager) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    
+    boolean isManaging = DataStore.getProjects().stream()
+            .anyMatch(p -> p.getManager().equals(manager));
+
+    if (isManaging) {
+        System.out.println("Error: You are already managing a project. " +
+                "Reassign or delete your current project first.");
+        return;
+    }
+
+    
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
 
         System.out.print("Enter project name: ");
         String name = scanner.nextLine().trim();
