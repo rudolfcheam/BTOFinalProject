@@ -20,7 +20,7 @@ public class CLI {
             System.out.println("=== Welcome to BTO Management System ===");
             User user = login();
             if (user == null) {
-                System.out.println("User not found!");
+                System.out.println("Invalid NRIC or password");
             } else {
                 switch (user) {
                     case HDBManager hdbManager:
