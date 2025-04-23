@@ -138,7 +138,7 @@ public class ApplicationController {
 
         if (!app.getApplicant().eligibleFor3Room()) {
             System.out.printf("Applicant is only eligible for 2-Room flats at %s." +
-                    "\nWould you like to book a 2-Room flat for the applcant? (Y/N): ", app.getProject().getName());
+                    "\nWould you like to book a 2-Room flat for the applicant? (Y/N): ", app.getProject().getName());
             String response = scanner.nextLine().trim();
             if (response.equalsIgnoreCase("Y")) {
                 if (app.getProject().bookFlat("2-Room")) {
