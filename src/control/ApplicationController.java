@@ -269,23 +269,25 @@ public class ApplicationController {
 
 
     public void checkRegistrationStatus(HDBOfficer officer) {
-        if (officer.getRequestedProject() != null) {
-            System.out.printf("Your registration to join the Project %s is still pending.\n", officer.getRequestedProject().getName());
-        } else {
-            System.out.println("You have not registered to join any new projects.");
-        }
-        if (!officer.getAssignedProject().isEmpty()) {
-            System.out.println("You have already been successfully registered for the following projects: ");
-            int index = 0;
-            for (Project project : officer.getAssignedProject()) {
-                System.out.printf("%d. %s [%s to %s]",
-                        ++index,
-                        project.getName(),
-                        project.getStartDate(),
-                        project.getEndDate());
-            }
+    if (officer.getRequestedProject() != null) {
+        System.out.printf("Your registration to join the Project %s is still pending.\n", 
+            officer.getRequestedProject().getName());
+    } else if (officer.getAssignedProject().isEmpty()) {
+        System.out.println("You have not registered to join any new projects.");
+    }
+
+    if (!officer.getAssignedProject().isEmpty()) {
+        System.out.println("You have already been successfully registered for the following projects: ");
+        int index = 0;
+        for (Project project : officer.getAssignedProject()) {
+            System.out.printf("%d. %s [%s to %s]",
+                    ++index,
+                    project.getName(),
+                    project.getStartDate(),
+                    project.getEndDate());
         }
     }
+}
     
 
     public void viewApplications(HDBOfficer officer) {
