@@ -44,7 +44,7 @@ public class DataStore {
         p1.setDates();
         projects.add(p1);
 
-        HDBManager michael = (HDBManager) users.get(8);
+        HDBManager Michael = (HDBManager) users.get(8);
         Project p2 = new Project("Green Valley", "Boon Lay", michael, 5, 300000, 10, 400000, 8);
         
         
