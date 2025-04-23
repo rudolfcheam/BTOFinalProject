@@ -74,12 +74,18 @@ public class Project {
 
     public void setDates() {
         Scanner myScanner = new Scanner(System.in);
-        System.out.println("===== Application Start Date =====");
-        this.startDate = getDateInput(myScanner);
-        System.out.println("===== Application End Date =====");
-        this.endDate = getDateInput(myScanner);
+        while (true) {
+            System.out.println("===== Application Start Date =====");
+            this.startDate = getDateInput(myScanner);
+            System.out.println("===== Application End Date =====");
+            this.endDate = getDateInput(myScanner);
+            if (endDate.isBefore(startDate)) {
+                System.out.println("End date cannot be before start date. Please enter again.");
+            } else {
+                break;
+            }
+        }
     }
-
     private LocalDate getDateInput(Scanner myScanner) {
 
         System.out.print("Enter day (1-31): ");

@@ -14,4 +14,13 @@ public class AuthController {
         }
         return null;
     }
+    public String changeUserPassword(User user, String oldPassword, String newPassword) {
+        if (user.changePassword(oldPassword, newPassword)) {
+            return "SUCCESS";
+        } else if (!user.getPassword().equals(oldPassword)) {
+            return "WRONG_OLD_PASSWORD";
+        } else {
+            return "INVALID_NEW_PASSWORD"; 
+        }
+    }
 }
