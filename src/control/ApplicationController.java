@@ -421,8 +421,7 @@ public class ApplicationController {
             );
         }
 
-        System.out.print("Enter the application to process (0 to cancel):");
-        int choice = myScanner.nextInt();
+        int choice = get_int_input("Enter the application to process (0 to cancel): ");
         myScanner.nextLine();        //Get rid of newline character
         if (choice == 0 || choice > index) {
             System.out.print("Request Cancelled.");
@@ -472,8 +471,7 @@ public class ApplicationController {
             );
         }
 
-        System.out.print("Enter the application to process (0 to cancel):");
-        int choice = myScanner.nextInt();
+        int choice = get_int_input("Enter the application to process (0 to cancel): ");
         myScanner.nextLine();                   //Clear the newline before next input
         if (choice == 0 || choice > index) {
             System.out.print("Request Cancelled.");
