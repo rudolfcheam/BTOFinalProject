@@ -229,9 +229,8 @@ public class ApplicationController {
                     project.getOfficerSlots(),
                     project.getOfficerSlots() - project.getOfficersList().size());
         }
-        System.out.println("Select the project that you would like to register for: ");
 
-        int choice = scanner.nextInt();
+        int choice = get_int_input("Select the project that you would like to register for: ");
         scanner.nextLine();
 
         if (choice < 0 || choice > allProjects.size()) {
