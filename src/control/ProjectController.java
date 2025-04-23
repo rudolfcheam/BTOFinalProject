@@ -148,7 +148,7 @@ public class ProjectController {
 
     if (isManaging) {
         System.out.println("Error: You are already managing a project. " +
-                "Reassign or delete your current project first.");
+        "Use the 'Edit Project' option to transfer management to another manager.");
         return;
     }
 
@@ -280,29 +280,39 @@ public class ProjectController {
     }
 
     public void changeManager(Project project, HDBManager oldManager) {
-        System.out.println("Enter the NRIC of the new manager: ");
-        String nric = scanner.nextLine().trim();
-        for (User user: DataStore.getUsers()) {
-            if (user.getNric().equalsIgnoreCase(nric)) {
-                if (user instanceof HDBManager newManager) {
-                    System.out.printf("Are you sure you want to transfer management to Manager %s (%s) [Y/N]:\n",
-                            newManager.getName(), newManager.getNric());
-                    String choice = scanner.nextLine().trim();
-                    if (choice.equalsIgnoreCase("y")) {
-                        project.setManager(newManager);
-                        oldManager.setProject(null);
-                        newManager.setProject(project);
-                        System.out.printf("Management of Project %s transferred: %s -> %s\n",
-                                project.getName(), oldManager.getName(), newManager.getName());
-                    }
-                } else {
-                    System.out.println("User is not a manager!");
+    System.out.println("Enter the NRIC of the new manager: ");
+    String nric = scanner.nextLine().trim();
+    for (User user : DataStore.getUsers()) {
+        if (user.getNric().equalsIgnoreCase(nric)) {
+            if (user instanceof HDBManager newManager) {
+                
+                boolean isManaging = DataStore.getProjects().stream()
+                        .anyMatch(p -> p.getManager().equals(newManager));
+
+                if (isManaging) {
+                    System.out.printf("Error: %s is already managing a project. " +
+                            "Reassign their current project first.\n", newManager.getName());
+                    return;
+                }
+
+                System.out.printf("Are you sure you want to transfer management to Manager %s (%s) [Y/N]:\n",
+                        newManager.getName(), newManager.getNric());
+                String choice = scanner.nextLine().trim();
+                if (choice.equalsIgnoreCase("Y")) {
+                    project.setManager(newManager);
+                    oldManager.setProject(null);
+                    newManager.setProject(project);
+                    System.out.printf("Management of Project %s transferred: %s -> %s\n",
+                            project.getName(), oldManager.getName(), newManager.getName());
                 }
             } else {
-                System.out.println("The specified user does not exist.");
+                System.out.println("User is not a manager!");
             }
+        } else {
+            System.out.println("The specified user does not exist.");
         }
     }
+}
 
 
     private void changeFlatDetails(String flatType, Project project) {
