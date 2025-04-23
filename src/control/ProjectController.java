@@ -205,9 +205,11 @@ public class ProjectController {
                 changeNeighbourhood(toEdit);
                 break;
             case "3":
+                scanner.nextLine();
                 changeFlatDetails("2-room", toEdit);
                 break;
             case "4":
+                scanner.nextLine();
                 changeFlatDetails("3-room", toEdit);
                 break;
             case "5":
@@ -228,6 +230,7 @@ public class ProjectController {
                 changeManager(toEdit, manager);
                 break;
             case "7":
+                scanner.nextLine();
                 changeOfficerSlots(toEdit);
                 break;
             case "8":
@@ -237,12 +240,18 @@ public class ProjectController {
 
 
     public void changeOfficerSlots(Project project) {
-        System.out.println("Indicate the new number of officer slots (MAX 10)");
-        int newNum = scanner.nextInt();
-        System.out.printf("Number of officer slots changed: %d -> %d\n", project.getOfficerSlots(), newNum);
-        project.setOfficerSlots(newNum);
+        while (true) {
+            int newNum = get_int_input("Indicate the new number of officer slots (MAX 10): ");
+            if (newNum > 10) {
+                System.out.println("The number of officer slot must be less or equal to 10");
+                continue;
+            } else {
+                System.out.printf("Number of officer slots changed: %d -> %d\n", project.getOfficerSlots(), newNum);
+                project.setOfficerSlots(newNum);
+                return;
+            }
+        }
     }
-
 
     public void changeManager(Project project, HDBManager oldManager) {
         System.out.println("Enter the NRIC of the new manager: ");
@@ -272,10 +281,8 @@ public class ProjectController {
 
     private void changeFlatDetails(String flatType, Project project) {
         if (flatType.equalsIgnoreCase("2-Room")) {
-            System.out.println("Enter the new price of 2 Room Flats");
-            int newPrice = scanner.nextInt();
-            System.out.println("Enter the new quantity of 2 Room Flats");
-            int newCount = scanner.nextInt();
+            int newPrice = get_int_input("Enter the new price of 2 Room Flats: ");
+            int newCount = get_int_input("Enter the new quantity of 2 Room Flats: ");
             if (newPrice != project.getFlatPrices().get("2-Room")) {
                 System.out.printf("2 Room Flat Price: $%d -> $%d\n", project.getFlatPrices().get("2-Room"), newPrice);
                 project.setFlatPrices("2-Room", newPrice);
@@ -285,10 +292,8 @@ public class ProjectController {
                 project.setFlatCounts("2-Room", newCount);
             }
         } else {
-            System.out.println("Enter the new price of 3 Room Flats: ");
-            int newPrice = scanner.nextInt();
-            System.out.println("Enter the new quantity of 3 Room Flats: ");
-            int newCount = scanner.nextInt();
+            int newPrice = get_int_input("Enter the new price of 3 Room Flats: ");
+            int newCount = get_int_input("Enter the new quantity of 3 Room Flats: ");
             if (newPrice != project.getFlatPrices().get("3-Room")) {
                 System.out.printf("3 Room Flat Price: $%d -> $%d\n", project.getFlatPrices().get("3-Room"), newPrice);
                 project.setFlatPrices("2-Room", newPrice);
