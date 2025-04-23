@@ -16,7 +16,12 @@ public class ProjectController {
         while (true) {
             try {
                 System.out.print(s);
-                return Integer.parseInt(scanner.nextLine().trim());
+                int value = Integer.parseInt(scanner.nextLine().trim());
+                if (value < 0) {
+                    System.out.println("Please enter a non-negative number.");
+                } else {
+                    return value;
+                }
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input! Please enter a whole number");
             }
@@ -147,7 +152,16 @@ public class ProjectController {
         int twoRoomPrice = get_int_input("Enter the price of 2-Room flats: ");
         int threeRoomCount = get_int_input("Enter the number of 3-Room flats: ");
         int threeRoomPrice = get_int_input("Enter the price of 3-Room flats: ");
-        int officerSlots = get_int_input("Number of HDB Officer Slots: ");
+        int officerSlots;
+        while (true) {
+            officerSlots = get_int_input("Number of HDB Officer Slots(MAX 10): ");
+            if (officerSlots > 10) {
+                System.out.println("The number of officer slot must be less or equal to 10");
+                continue;
+            } else {
+                break;
+            }
+        }
 
         Project project = new Project(name, neighborhood, manager, twoRoomCount, twoRoomPrice, threeRoomCount, threeRoomPrice, officerSlots);
         project.setDates();
