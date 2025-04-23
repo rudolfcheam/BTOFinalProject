@@ -17,6 +17,17 @@ import java.util.stream.Collectors;
 public class ProjectController {
     private Scanner scanner = new Scanner(System.in);
 
+    public int get_int_input(String s) {
+        while (true) {
+            try {
+                System.out.print(s);
+                return Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input! Please enter a whole number");
+            }
+        }
+    }
+
     public void viewAvailableProjects(Applicant applicant) {
         List<Project> projects = DataStore.getVisibleProjects();
 
@@ -137,16 +148,11 @@ public class ProjectController {
         String name = scanner.nextLine().trim();
         System.out.print("Enter neighborhood: ");
         String neighborhood = scanner.nextLine().trim();
-        System.out.print("Enter the number of 2-Room flats: ");
-        int twoRoomCount = scanner.nextInt();
-        System.out.print("Enter the price of 2-Room flats: ");
-        int twoRoomPrice = scanner.nextInt();
-        System.out.print("Enter the number of 3-Room flats: ");
-        int threeRoomCount = scanner.nextInt();
-        System.out.print("Enter the price of 3-Room flats: ");
-        int threeRoomPrice = scanner.nextInt();
-        System.out.println("Number of HDB Officer Slots: ");
-        int officerSlots = scanner.nextInt();
+        int twoRoomCount = get_int_input("Enter the number of 2-Room flats: ");
+        int twoRoomPrice = get_int_input("Enter the price of 2-Room flats: ");
+        int threeRoomCount = get_int_input("Enter the number of 3-Room flats: ");
+        int threeRoomPrice = get_int_input("Enter the price of 3-Room flats: ");
+        int officerSlots = get_int_input("Number of HDB Officer Slots: ");
 
         Project project = new Project(name, neighborhood, manager, twoRoomCount, twoRoomPrice, threeRoomCount, threeRoomPrice, officerSlots);
         project.setDates();
