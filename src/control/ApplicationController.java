@@ -63,7 +63,7 @@ public class ApplicationController implements ApplicationService {
             if (validateChoice(chosen, applicant)) {
                 
                 Application app = new Application(applicant, chosen);
-                applicant.setApplication(app);
+                app.setFlatTypeBooked(applicant.getFlatType());
                 DataStore.getApplications().add(app);
                 System.out.println("Application submitted.");
                 return;
@@ -605,7 +605,7 @@ public class ApplicationController implements ApplicationService {
                             Applicant applicant = app.getApplicant();
                             Project project = app.getProject();
                             System.out.printf("Name: %s | Age: %d | Marital Status: %s | Flat Type: %s | Project: %s\n",
-                                    applicant.getName(), applicant.getAge(), applicant.getMaritalStatus(), applicant.getFlatType(), project.getName());
+                                    applicant.getName(), applicant.getAge(), applicant.getMaritalStatus(), app.getFlatTypeBooked(), project.getName());
                         }
                     }
                 break;
