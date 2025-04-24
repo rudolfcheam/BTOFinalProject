@@ -49,7 +49,7 @@ public class CLI {
             String nric = scanner.nextLine().trim();
             System.out.print("Enter password: ");
             String password = scanner.nextLine().trim();
-            return authController.login(nric, password);
+            return authService.login(nric, password);
         }
     }
 
@@ -74,25 +74,25 @@ public class CLI {
             String choice = scanner.nextLine().trim();
             switch (choice) {
                 case "1":
-                    projectController.viewAvailableProjects(applicant);
+                    projectService.viewAvailableProjects(applicant);
                     break;
                 case "2":
                     handlePasswordChange(applicant);
                     break;
                 case "3":
-                    appController.applyForProject(applicant);
+                    appService.applyForProject(applicant);
                     break;
                 case "4":
-                    appController.viewStatus(applicant);
+                    appService.viewStatus(applicant);
                     break;
                 case "5":
-                    enquiryController.handleEnquiries(applicant, true);
+                    enquiryService.handleEnquiries(applicant, true);
                     break;
                 case "6":
-                    appController.withdrawApplication(applicant);
+                    appService.withdrawApplication(applicant);
                     break;
                 case "7":
-                    appController.viewApplicationHistory(applicant);
+                    appService.viewApplicationHistory(applicant);
                     break;
                 case "8":
                     System.out.println("Logging out of Applicant Menu...");
@@ -127,25 +127,25 @@ public class CLI {
                     handlePasswordChange(officer);
                     break;
                 case "3":
-                    appController.registerForProject(officer);
+                    appService.registerForProject(officer);
                     break;
                 case "4":
-                    appController.checkRegistrationStatus(officer);
+                    appService.checkRegistrationStatus(officer);
                     break;
                 case "5":
-                    projectController.viewAssignedProject(officer);
+                    projectService.viewAssignedProject(officer);
                     break;
                 case "6":
-                    enquiryController.handleEnquiries(officer, false);
+                    enquiryService.handleEnquiries(officer, false);
                     break;
                 case "7":
-                    appController.viewApplications(officer);
+                    appService.viewApplications(officer);
                     break;
                 case "8":
-                    appController.manageBooking(officer);
+                    appService.manageBooking(officer);
                     break;
                 case "9":
-                    appController.generateReceipt(officer);
+                    appService.generateReceipt(officer);
                     break;
                 case "10":
                     System.out.printf("Logging out from %s\n", officer.getName());
@@ -175,31 +175,31 @@ public class CLI {
             String choice = scanner.nextLine().trim();
             switch (choice) {
                 case "1":
-                    projectController.manageProjects(manager);
+                    projectService.manageProjects(manager);
                     break;
                 case "2":
                     handlePasswordChange(manager); // Call this method
                     break;
                 case "3":
-                    projectController.toggleVisibility(manager);
+                    projectService.toggleVisibility(manager);
                     break;
                 case "4":
-                    appController.manageApplicationsWithdrawals(manager);
+                    appService.manageApplicationsWithdrawals(manager);
                     break;
                 case "5":
-                    projectController.approveOfficers(manager);
+                    projectService.approveOfficers(manager);
                     break;
                 case "6":
-                    appController.generateReports(manager);
+                    appService.generateReports(manager);
                     break;
                 case "7":
-                    enquiryController.handleEnquiries(manager, false);
+                    enquiryService.handleEnquiries(manager, false);
                     break;
                 case "8":
-                    projectController.viewAllProjects();
+                    projectService.viewAllProjects();
                     break;
                 case "9":
-                    projectController.viewOwnProjects(manager);
+                    projectService.viewOwnProjects(manager);
                     break;
                 case "10":
                     System.out.println("Logging out...\n");
@@ -215,7 +215,7 @@ public class CLI {
         System.out.print("Enter new password: ");
         String newPassword = scanner.nextLine().trim();
 
-        String result = authController.changeUserPassword(user, oldPassword, newPassword);
+        String result = authService.changeUserPassword(user, oldPassword, newPassword);
 
         switch (result) {
             case "SUCCESS":
