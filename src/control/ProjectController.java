@@ -482,8 +482,14 @@ public class ProjectController implements ProjectService {
                 .toList();
         int index = 0;
         for (Project project : myProjects) {
-            System.out.println("==== My Projects ====");
-            System.out.printf("%d. %s (%s)\n", ++index, project.getName(), project.getNeighborhood());
+            System.out.printf("%d. %s (%s) [%s to %s] (Max - %d slots | %d slots left)\n",
+            index + 1,
+            project.getName(),
+            project.getNeighborhood(),
+            project.getStartDate(),
+            project.getEndDate(),
+            project.getOfficerSlots(),
+            project.getOfficerSlots() - project.getOfficersList().size());
         }
     }
 }
