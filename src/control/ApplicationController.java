@@ -5,7 +5,7 @@ import utility.DataStore;
 
 import java.util.*;
 
-public class ApplicationController implements ApplicationService{
+public class ApplicationController implements ApplicationService {
     private Scanner scanner = new Scanner(System.in);
 
     public int get_int_input(String s) {
