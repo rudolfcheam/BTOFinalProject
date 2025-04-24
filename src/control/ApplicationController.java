@@ -25,46 +25,56 @@ public class ApplicationController {
     }
 
     public void applyForProject(Applicant applicant) {
-        List<Project> available = DataStore.getVisibleProjects();
+    List<Project> available = DataStore.getVisibleProjects();
 
+    
+    if (applicant instanceof HDBOfficer officer) {
+        available = available.stream()
+                .filter(p -> !officer.getAssignedProject().contains(p))
+                .toList();
+    }
 
-        if (applicant.getApplication() != null) {
-            System.out.println("You have already applied for a project.");
-            return;
+    if (available.isEmpty()) {
+        System.out.println("No projects available for application.");
+        return;
+    }
+
+    System.out.println("Available Projects:");
+    for (int i = 0; i < available.size(); i++) {
+        Project p = available.get(i);
+        System.out.printf("%d. %s (%s) | 2R (%d) | 3R (%d)\n",
+                i + 1, p.getName(), p.getNeighborhood(),
+                p.getFlatCounts().get("2-Room"), p.getFlatCounts().get("3-Room"));
+    }
+    System.out.println("0. Cancel and return to menu");
+    System.out.printf("[%d projects available]\n", available.size());
+
+    while (true) {
+        System.out.print("Choose project (0 to cancel): ");
+        int choice = get_int_input("") - 1;
+
+        if (choice == -1) {
+            System.out.println("Application cancelled.");
+            return; 
         }
 
-        System.out.println("Available Projects:");
-        int i;
-        for (i = 0; i < available.size(); i++) {
-            System.out.printf("%d. %s (%s) | 2R (%d) | 3R (%d)\n",
-                    i + 1, available.get(i).getName(),
-                    available.get(i).getNeighborhood(),
-                    available.get(i).getFlatCounts().get("2-Room"),
-                    available.get(i).getFlatCounts().get("3-Room"));
-        }
-        System.out.printf("[%d projects available]\n", i);
-
-        boolean validChoice = false;
-        while (!validChoice) {
-            System.out.print("Choose project: ");
-            int choice = get_int_input("Choose project: ") - 1;
-            scanner.nextLine();
-
-            if (choice >= 0 && choice < available.size()) {
-                Project chosen = available.get(choice);
-                validChoice = validateChoice(chosen, applicant);
-                if (validChoice) {
-                    Application application = new Application(applicant, chosen);
-                    applicant.setApplication(application);
-                    applicant.addToAppHistory(application);
-                    DataStore.getApplications().add(application);
-                    System.out.println("Application submitted successfully.");
-                }
+        if (choice >= 0 && choice < available.size()) {
+            Project chosen = available.get(choice);
+            if (validateChoice(chosen, applicant)) {
+                
+                Application app = new Application(applicant, chosen);
+                applicant.setApplication(app);
+                DataStore.getApplications().add(app);
+                System.out.println("Application submitted.");
+                return;
             } else {
-                System.out.println("Invalid selection.");
+                System.out.println("Invalid choice. Try again.");
             }
+        } else {
+            System.out.println("Invalid selection.");
         }
     }
+}
 
     private boolean validateChoice(Project project, Applicant applicant) {
         if (applicant instanceof HDBOfficer) {
