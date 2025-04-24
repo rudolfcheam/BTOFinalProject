@@ -396,7 +396,7 @@ public class ProjectController implements ProjectService {
             System.out.printf("%d. %s (Visible: %b)\n", i + 1, projects.get(i).getName(), projects.get(i).isVisible());
         }
 
-        int choice = get_int_input("Select project to toggle visibility: ");
+        int choice = get_int_input("Select project to toggle visibility: ") - 1;
 
         if (choice >= 0 && choice < projects.size()) {
             Project selected = projects.get(choice);
