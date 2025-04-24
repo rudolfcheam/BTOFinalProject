@@ -5,6 +5,19 @@ import entity.*;
 
 import java.util.Scanner;
 
+/**
+ * Command-Line Interface (CLI) for the BTO Management System.
+ * Handles user login and displays menus based on user roles
+ * (Applicant, HDB Officer, HDB Manager). Delegates tasks to
+ * relevant service layers.
+ * 
+ * This class demonstrates Dependency Inversion by depending on
+ * service interfaces rather than concrete implementations.
+ * 
+ * @author YourName
+ * @version 1.0
+ */
+
 public class CLI {
     private Scanner scanner = new Scanner(System.in);
     private final AuthService authService;
@@ -12,13 +25,25 @@ public class CLI {
     private final ApplicationService appService;
     private final EnquiryService enquiryService;
 
+    /**
+     * Constructs a new CLI instance with service dependencies injected.
+     * 
+     * @param authService       Authentication service
+     * @param projectService    Project-related service
+     * @param appService        Application-related service
+     * @param enquiryService    Enquiry management service
+     */
+
     public CLI(AuthService authService, ProjectService projectService, ApplicationService appService, EnquiryService enquiryService) {
         this.authService = authService;
         this.projectService = projectService;
         this.appService = appService;
         this.enquiryService = enquiryService;
     }
-
+    
+    /**
+     * Starts the main loop of the application and prompts for login.
+     */
     public void start() {
         while (true) {
             System.out.println("=== Welcome to BTO Management System ===");
