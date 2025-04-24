@@ -223,48 +223,57 @@ public class ApplicationController implements ApplicationService {
 
 
     public void registerForProject(HDBOfficer officer) {
-        if (officer.getRequestedProject() != null) {
-            System.out.printf("You have already applied for %s, would you like to reapply for a different project instead? (Y/N)", officer.getRequestedProject().getName());
-            String selection = scanner.nextLine().trim();
-            if (!selection.equalsIgnoreCase("y")) {
-                System.out.println("Application for your project still preserved.");
-                return;
-            }
-        }
-
-        System.out.println("These are the HDB projects that are available for registration: (MAX 10 officers per project)");
-
-        System.out.println("=== Available Projects ===");
-        List<Project> allProjects = DataStore.getProjects();
-
-        int index = 0;
-        for (Project project : allProjects) {
-            System.out.printf("%d. %s (%s) [%s to %s] (Max - %d slots | %d slots left)\n",
-                    ++index,
-                    project.getName(),
-                    project.getNeighborhood(),
-                    project.getStartDate(),
-                    project.getEndDate(),
-                    project.getOfficerSlots(),
-                    project.getOfficerSlots() - project.getOfficersList().size());
-        }
-
-        int choice = get_int_input("Select the project that you would like to register for: ");
-        scanner.nextLine();
-
-        if (choice < 0 || choice > allProjects.size()) {
-            System.out.println("Invalid Project.");
-        } else {
-            Project selected = allProjects.get(choice - 1);
-            boolean validChoice = validRegistration(officer, selected);
-            if (validChoice) {
-                officer.setRequestedProject(selected);
-                System.out.println("Request submitted for manager's approval.");
-            } else {
-                System.out.println("You cannot apply for this project!");
-            }
+    if (officer.getRequestedProject() != null) {
+        System.out.printf("You have already applied for %s. Would you like to reapply for a different project instead? (Y/N): ", officer.getRequestedProject().getName());
+        String selection = scanner.nextLine().trim();
+        if (!selection.equalsIgnoreCase("y")) {
+            System.out.println("Application for your project still preserved.");
+            return;
         }
     }
+
+    System.out.println("These are the HDB projects that are available for registration: (MAX 10 officers per project)");
+
+    System.out.println("=== Available Projects ===");
+    List<Project> allProjects = DataStore.getProjects();
+
+    int index = 0;
+    for (Project project : allProjects) {
+        int remainingSlots = project.getOfficerSlots() - project.getOfficersList().size();
+        System.out.printf("%d. %s (%s) [%s to %s] (Max - %d slots | %d slots left)\n",
+                ++index,
+                project.getName(),
+                project.getNeighborhood(),
+                project.getStartDate(),
+                project.getEndDate(),
+                project.getOfficerSlots(),
+                remainingSlots);
+    }
+
+    int choice = get_int_input("Select the project that you would like to register for: ");
+    scanner.nextLine();
+
+    if (choice < 1 || choice > allProjects.size()) {
+        System.out.println("Invalid Project.");
+    } else {
+        Project selected = allProjects.get(choice - 1);
+        
+        
+        if (selected.getOfficerSlots() - selected.getOfficersList().size() <= 0) {
+            System.out.println("No available slots left for this project.");
+            return;
+        }
+
+        boolean validChoice = validRegistration(officer, selected);
+        if (validChoice) {
+            officer.setRequestedProject(selected);
+            selected.addOfficer(officer); 
+            System.out.println("Request submitted for manager's approval.");
+        } else {
+            System.out.println("You cannot apply for this project!");
+        }
+    }
+}
 
 
     //Checks if the project selected by the officer was applied by him, or if it overlaps with other projects that he has applied for
