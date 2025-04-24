@@ -142,58 +142,71 @@ public class ProjectController implements ProjectService {
 
 
     private void createProject(HDBManager manager) {
-    
-    boolean isManaging = DataStore.getProjects().stream()
-            .anyMatch(p -> p.getManager().equals(manager));
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    if (isManaging) {
-        System.out.println("Error: You are already managing a project. " +
-        "Use the 'Edit Project' option to transfer management to another manager.");
-        return;
+    System.out.print("Enter project name: ");
+    String name = scanner.nextLine().trim();
+    System.out.print("Enter neighborhood: ");
+    String neighborhood = scanner.nextLine().trim();
+    int twoRoomCount = get_int_input("Enter the number of 2-Room flats: ");
+    int twoRoomPrice = get_int_input("Enter the price of 2-Room flats: ");
+    int threeRoomCount = get_int_input("Enter the number of 3-Room flats: ");
+    int threeRoomPrice = get_int_input("Enter the price of 3-Room flats: ");
+    int officerSlots;
+
+    
+    while (true) {
+        officerSlots = get_int_input("Number of HDB Officer Slots (MAX 10): ");
+        if (officerSlots > 10) {
+            System.out.println("The number of officer slots must be less than or equal to 10.");
+            continue;
+        } else {
+            break;
+        }
     }
 
     
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    Project project = new Project(name, neighborhood, manager, twoRoomCount, twoRoomPrice, threeRoomCount, threeRoomPrice, officerSlots);
 
-
-        System.out.print("Enter project name: ");
-        String name = scanner.nextLine().trim();
-        System.out.print("Enter neighborhood: ");
-        String neighborhood = scanner.nextLine().trim();
-        int twoRoomCount = get_int_input("Enter the number of 2-Room flats: ");
-        int twoRoomPrice = get_int_input("Enter the price of 2-Room flats: ");
-        int threeRoomCount = get_int_input("Enter the number of 3-Room flats: ");
-        int threeRoomPrice = get_int_input("Enter the price of 3-Room flats: ");
-        int officerSlots;
-        while (true) {
-            officerSlots = get_int_input("Number of HDB Officer Slots(MAX 10): ");
-            if (officerSlots > 10) {
-                System.out.println("The number of officer slot must be less or equal to 10");
-                continue;
-            } else {
-                break;
-            }
-        }
-
-        Project project = new Project(name, neighborhood, manager, twoRoomCount, twoRoomPrice, threeRoomCount, threeRoomPrice, officerSlots);
+    
+    while (true) {
         project.setDates();
-        DataStore.getProjects().add(project);
-        System.out.println("The following project has been created:");
-        System.out.printf("""
-                Project Name: %s
-                Neighbourhood: %s
-                Number of 2-Room Flats: %d
-                Price of 2-Room Flats: %d
-                Number of 3-Room Flats: %d
-                Price of 3-Room Flats: %d
-                Application Opening Date: %s
-                Application Closing Date: %s
-                HDB Manager in Charge: %s
-                Available HDB Officer Slots: %d
-                """,
-                name, neighborhood, twoRoomCount, twoRoomPrice, threeRoomCount, threeRoomPrice,
-                project.getStartDate().format(formatter), project.getEndDate().format(formatter),
-                manager.getName(), project.getOfficerSlots());
+
+        boolean hasOverlap = DataStore.getProjects().stream()
+            .filter(p -> p.getManager().equals(manager)) // Only consider projects managed by the same manager
+            .anyMatch(existingProject -> {
+                LocalDate existingStart = existingProject.getStartDate();
+                LocalDate existingEnd = existingProject.getEndDate();
+                return !(project.getEndDate().isBefore(existingStart) || project.getStartDate().isAfter(existingEnd));
+            });
+
+        if (hasOverlap) {
+            System.out.println("Error: The entered dates overlap with an existing project managed by you. Please enter again.");
+        } else {
+            break;
+        }
+    }
+
+    
+    DataStore.getProjects().add(project);
+
+    
+    System.out.println("The following project has been created:");
+    System.out.printf("""
+            Project Name: %s
+            Neighborhood: %s
+            Number of 2-Room Flats: %d
+            Price of 2-Room Flats: %d
+            Number of 3-Room Flats: %d
+            Price of 3-Room Flats: %d
+            Application Opening Date: %s
+            Application Closing Date: %s
+            HDB Manager in Charge: %s
+            Available HDB Officer Slots: %d
+            """,
+            name, neighborhood, twoRoomCount, twoRoomPrice, threeRoomCount, threeRoomPrice,
+            project.getStartDate().format(formatter), project.getEndDate().format(formatter),
+            manager.getName(), project.getOfficerSlots());
     }
 
 
