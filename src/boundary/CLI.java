@@ -1,19 +1,23 @@
 package boundary;
 
-import control.AuthController;
-import control.ProjectController;
-import control.ApplicationController;
-import control.EnquiryController;
+import control.*;
 import entity.*;
 
 import java.util.Scanner;
 
 public class CLI {
     private Scanner scanner = new Scanner(System.in);
-    private AuthController authController = new AuthController();
-    private ProjectController projectController = new ProjectController();
-    private ApplicationController appController = new ApplicationController();
-    private EnquiryController enquiryController = new EnquiryController();
+    private final AuthService authService;
+    private final ProjectService projectService;
+    private final ApplicationService appService;
+    private final EnquiryService enquiryService;
+
+    public CLI(AuthService authService, ProjectService projectService, ApplicationService appService, EnquiryService enquiryService) {
+        this.authService = authService;
+        this.projectService = projectService;
+        this.appService = appService;
+        this.enquiryService = enquiryService;
+    }
 
     public void start() {
         while (true) {
