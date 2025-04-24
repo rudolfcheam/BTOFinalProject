@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Scanner;
 
 
-public class ProjectController {
+public class ProjectController implements ProjectService {
     private Scanner scanner = new Scanner(System.in);
 
     public int get_int_input(String s) {
