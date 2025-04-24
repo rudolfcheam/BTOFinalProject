@@ -3,7 +3,7 @@ package control;
 import entity.User;
 import utility.DataStore;
 
-public class AuthController {
+public class AuthController implements AuthService {
 
     public User login(String nric, String password) {
         for (User user : DataStore.getUsers()) {
