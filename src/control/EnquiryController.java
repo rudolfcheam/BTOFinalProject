@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-public class EnquiryController {
+public class EnquiryController implements EnquiryService {
     private Scanner scanner = new Scanner(System.in);
     ProjectController pc = new ProjectController();
 
