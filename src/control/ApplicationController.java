@@ -174,6 +174,11 @@ public class ApplicationController implements ApplicationService {
                             app.getApplicant().getNric());
                     app.setStatus("Booked");
                     app.setFlatTypeBooked("2-Room");
+
+                    app.getApplicant().setApplication(app);
+                    app.getApplicant().addToAppHistory(app);
+                    DataStore.getApplications().add(app);
+
                 } else {
                     System.out.println("Flat unavailable! No vacancies left!");
                 }
@@ -202,6 +207,10 @@ public class ApplicationController implements ApplicationService {
                             app.getApplicant().getNric());
                         app.setStatus("Booked");
                         app.setFlatTypeBooked(flatTypes.get(response - 1));
+
+                        app.getApplicant().setApplication(app);
+                        app.getApplicant().addToAppHistory(app);
+                        DataStore.getApplications().add(app);
                     } else {
                         System.out.println("Flat unavailable! No vacancies left!");
                     }
