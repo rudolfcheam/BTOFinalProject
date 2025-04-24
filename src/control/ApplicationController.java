@@ -335,35 +335,45 @@ public class ApplicationController implements ApplicationService {
 
 
     public void generateReceipt(HDBOfficer officer) {
-        System.out.println("Enter the NRIC number of the user that you would like to generate a receipt for: ");
-        scanner.nextLine(); //Remove the newline character.
-        String nric = scanner.nextLine().trim();
-
-        Application app = DataStore.getApplicationByNric(nric);
-
-        if (app != null){
-            if (!app.getStatus().equalsIgnoreCase("booked")) {
-                System.out.println("User has not booked a flat.");
-            } else {
-                System.out.printf("==== Receipt for %s ====\n", app.getApplicant());
-                System.out.printf("""
-                        Applicant Name: %s
-                        NRIC: %s
-                        Age: %d
-                        Marital Status: %s
-                        Project Name: %s
-                        Neighbourhood: %s
-                        Flat Type Selected: %s
-                        Flat Price: %s
-                        Flat booked by: %s
-                        """, app.getApplicant().getName(), app.getApplicant().getNric(), app.getApplicant().getAge(),
-                            app.getApplicant().getMaritalStatus(), app.getProject().getName(), app.getProject().getNeighborhood(),
-                            app.getFlatTypeBooked(), app.getProject().getFlatPrices().get(app.getFlatTypeBooked()), officer.getName());
-            }
-        } else {
-            System.out.println("NRIC not found.");
-        }
+    System.out.println("Enter the NRIC number of the user that you would like to generate a receipt for: ");
+    
+    String nric = scanner.nextLine().trim(); 
+    if (nric.isEmpty()) {
+        System.out.println("Error: NRIC cannot be empty. Please try again.");
+        return;
     }
+
+    System.out.println("Current applications in DataStore:");
+    for (Application app : DataStore.getApplications()) {
+        System.out.println("NRIC: " + app.getApplicant().getNric() + ", Status: " + app.getStatus());
+    }
+
+    System.out.println("Searching for NRIC: " + nric);
+    Application app = DataStore.getApplicationByNric(nric);
+
+    if (app != null) {
+        if (!app.getStatus().equalsIgnoreCase("booked")) {
+            System.out.println("User has not booked a flat.");
+        } else {
+            System.out.printf("==== Receipt for %s ====\n", app.getApplicant().getName());
+            System.out.printf("""
+                    Applicant Name: %s
+                    NRIC: %s
+                    Age: %d
+                    Marital Status: %s
+                    Project Name: %s
+                    Neighbourhood: %s
+                    Flat Type Selected: %s
+                    Flat Price: %s
+                    Flat booked by: %s
+                    """, app.getApplicant().getName(), app.getApplicant().getNric(), app.getApplicant().getAge(),
+                    app.getApplicant().getMaritalStatus(), app.getProject().getName(), app.getProject().getNeighborhood(),
+                    app.getFlatTypeBooked(), app.getProject().getFlatPrices().get(app.getFlatTypeBooked()), officer.getName());
+        }
+    } else {
+        System.out.println("NRIC not found.");
+    }
+}
 
     public void manageApplicationsWithdrawals(HDBManager manager) {
         Scanner sc = new Scanner(System.in);
