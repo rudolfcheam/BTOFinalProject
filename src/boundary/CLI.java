@@ -11,10 +11,7 @@ import java.util.Scanner;
  * (Applicant, HDB Officer, HDB Manager). Delegates tasks to
  * relevant service layers.
  * 
- * This class demonstrates Dependency Inversion by depending on
- * service interfaces rather than concrete implementations.
- * 
- * @author YourName
+ * @author FCS6-grp3
  * @version 1.0
  */
 
