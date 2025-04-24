@@ -66,13 +66,12 @@ public class DataStore {
     public static List<Enquiry> getEnquiries() { return enquiries; }
 
     public static Application getApplicationByNric(String nric) {
-        for (User user : users) {
-            if (user.getNric().equalsIgnoreCase(nric)) {
-                return ((Applicant) user).getApplication();
-            }
-        }
-        return null;
-    }
+    String formattedNric = nric.trim().toLowerCase();
+    return applications.stream()
+            .filter(app -> app.getApplicant().getNric().trim().toLowerCase().equals(formattedNric))
+            .findFirst()
+            .orElse(null);
+}
 
     public static List<Project> getProjectsByManager(HDBManager manager) {
         return projects.stream().filter(
